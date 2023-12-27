@@ -67,7 +67,8 @@ export default {
     },
     async fetchLogin (username, password) {
 
-      const apiUrl = `http://localhost:7000/`;
+      //const apiUrl = `http://localhost:7000/`;
+      const apiUrl = process.env.VUE_APP_API_URL;
       // Call your API with the user ID
       await axios.get(apiUrl + `api/users/email/${username}`)
           .then(res => {
