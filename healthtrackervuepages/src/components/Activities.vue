@@ -48,7 +48,8 @@ export default {
   methods: {
     fetchActivities() {
       // Retrieve user ID from the route params
-      const apiUrl = `http://localhost:7000/`;
+      //const apiUrl = `http://localhost:7000/`;
+      const apiUrl = process.env.VUE_APP_API_URL;
       // Call your API with the user ID
       axios.get(apiUrl + `api/activities/${this.user.id}`)
           .then(res => {

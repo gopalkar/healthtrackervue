@@ -118,7 +118,8 @@ export default {
   },
   methods: {
     async addUser() {
-      const apiUrl = `http://localhost:7000/`;
+      //const apiUrl = `http://localhost:7000/`;
+      const apiUrl = process.env.VUE_APP_API_URL;
       let url = apiUrl + `api/users/`
       await axios.post(url,
           {

@@ -111,7 +111,8 @@ export default {
   },
   methods: {
     updateUser: function () {
-      const apiUrl = `http://localhost:7000/`;
+      //const apiUrl = `http://localhost:7000/`;
+      const apiUrl = process.env.VUE_APP_API_URL;
       const userId = this.user.id;
       const url = apiUrl + `api/users/${userId}`
       axios.patch(url,
