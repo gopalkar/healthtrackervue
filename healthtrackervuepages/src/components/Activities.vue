@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user">
+  <div >
     <b-container>
       <b-row class="justify-content-center">
         <b-col md="6">
@@ -29,14 +29,16 @@ export default {
   data() {
     return {
       activities: [],
+      user: [],
     };
   },
   computed: {
-    user() {
+    userFound() {
       return this.$store.state.isAuthenticated;
     },
   },
   mounted() {
+    this.user = this.$store.state.user
     // Fetch user details using the ID from the route params
     this.fetchActivities();
   },
@@ -46,10 +48,9 @@ export default {
   methods: {
     fetchActivities() {
       // Retrieve user ID from the route params
-      this.userId = this.$route.params.userId;
       const apiUrl = `http://localhost:7000/`;
       // Call your API with the user ID
-      axios.get(apiUrl + `api/activities/${this.userId}`)
+      axios.get(apiUrl + `api/activities/${this.user.id}`)
           .then(res => {
             this.activities = res.data
           })

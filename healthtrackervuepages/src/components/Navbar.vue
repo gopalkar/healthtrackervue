@@ -1,6 +1,6 @@
 <template>
   <b-navbar toggleable="lg" type="dark" variant="dark">
-    <b-navbar-brand to="/">Health Tracker</b-navbar-brand>
+    <b-navbar-brand to="/home">Health Tracker</b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
     <b-collapse id="nav-collapse" is-nav>
@@ -19,6 +19,7 @@
           <div class="dropdown-menu" :class="{ 'show': dropdownOpen }">
             <router-link to="/userpage">Profile</router-link>
             <router-link to="/logout">Logout</router-link>
+            <b-dropdown-divider></b-dropdown-divider>
             <router-link to="/unsubscribe">UnSubscribe</router-link>
             <!-- Add more services as needed -->
           </div>
@@ -58,6 +59,10 @@ export default {
 
 <style>
 /* Add your styling for the navigation bar here */
+.separator {
+  border-top: 1px solid #ccc;
+  margin: 4px 0;
+}
 
 .navbar {
   display: flex;
@@ -103,13 +108,15 @@ export default {
   top: 100%;
   right: 0;
   background-color: #333;
+  color: #333;
   min-width: 160px;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
 .dropdown-menu a {
-  color: black;
+  background-color: #333;
+  color: white;
   padding: 12px 16px;
   display: block;
   text-decoration: none;

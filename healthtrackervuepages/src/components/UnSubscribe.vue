@@ -28,7 +28,8 @@ export default {
           .then(response => {
             console.log(response.status)
             this.message = 'You are successfully unsubscribed, do consider to register again!!'
-            this.$router.push('/')
+            this.$store.dispatch('authenticateUser', false);
+            this.$store.dispatch('logoutUser');
           })
           .catch(error => {
             console.log(error)
