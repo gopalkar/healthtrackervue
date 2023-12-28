@@ -15,7 +15,7 @@
         <b-col md="5">
           <b-card title="Recent Activities" class="my-3">
             <b-card-img src='https://www.cdc.gov/chronicdisease/resources/infographic/images/activity/150-minutes.PNG?_=62507' width="200" height="300"></b-card-img>
-            <b-card-text>
+            <b-card-text v-if="foundActivities">
               <p></p>
               <ul>
                 <li v-for="activity in activities" :key=activity.id>
@@ -23,12 +23,15 @@
                 </li>
               </ul>
             </b-card-text>
+            <b-card-text v-if="!foundActivities">
+              {{actMessage}}
+            </b-card-text>
           </b-card>
         </b-col>
         <b-col md="5">
           <b-card title="Latest Measurement" class="my-3">
             <b-card-img src='https://www.shutterstock.com/image-vector/male-size-chart-anatomy-human-600nw-1772389046.jpg' width="200" height="300"></b-card-img>
-            <b-card-text>
+            <b-card-text v-if="foundMeasurements">
               <div class="row">
                 <div class="column-gap-1">
                   <p><b>Measured Date:</b> {{ this.measurement.measuredDate }}</p>
@@ -68,6 +71,9 @@
                 </div>
               </div>
             </b-card-text>
+            <b-card-text v-if="!foundMeasurements">
+              {{mesMessage}}
+            </b-card-text>
           </b-card>
         </b-col>
       </b-row>
@@ -79,14 +85,20 @@
               <b-card-img src='https://media.istockphoto.com/id/146807105/photo/food-pyramid-pie-chart.jpg?s=612x612&w=0&k=20&c=SX0hFBaED3Wwi0G2pLfhsYN1GRjlyK8wzqHf-qUyJOk=' width="200" height="300"></b-card-img>
             </div>
             <div class="col-md-6">
-            <b-card-text>
+            <b-card-text v-if="foundNutritions">
               <p></p>
-              <div v-for="(group, key) in groupedData" :key="key">
+<!--              <div v-for="(group, key) in groupedData" :key="key">
                 <h3>{{ key }}</h3>
                 <ul>
                     Total Calories - {{ group[0].total }}
                 </ul>
+              </div>-->
+              <div>
+                <canvas ref="myChart"></canvas>
               </div>
+            </b-card-text>
+            <b-card-text v-if="!foundNutritions">
+              {{nutMessage}}
             </b-card-text>
             </div>
             </div>
@@ -100,6 +112,7 @@
 <script>
 import axios from "axios";
 import moment from 'moment';
+import Chart from 'chart.js';
 export default {
   name: 'htHome',
   data() {
@@ -110,10 +123,16 @@ export default {
       measurements: [],
       measurement: '',
       nutritions: [],
+      actMessage: '',
+      mesMessage: '',
+      nutMessage: '',
+      foundActivities: false,
+      foundMeasurements: false,
+      foundNutritions: false,
     };
   },
   computed: {
-    groupedData() {
+/*    groupedData() {
       // Group the data by the 'category' property
       const grouped = this.nutritions.reduce((result, item) => {
         const key = item.macroDate.substring(0,10);
@@ -132,7 +151,7 @@ export default {
       });
 
       return grouped;
-    },
+    },*/
   },
   mounted() {
     this.user = this.$store.state.user
@@ -159,8 +178,18 @@ export default {
       await axios.get(apiUrl + `api/activities/${this.user.id}`)
           .then(res => {
             this.activities = res.data
+            this.foundActivities = true
           })
-          .catch(() => alert("Error while fetching activities"));
+          .catch(error => {
+            if (error.response.status === 404) {
+              this.activities = []
+              this.actMessage = 'No Activities to report'
+            }
+            else {
+              this.activities = []
+              this.actMessage = 'Error while fetching activities'
+            }
+          });
     },
     async fetchMeasurements() {
       const apiUrl = process.env.VUE_APP_API_URL;
@@ -174,8 +203,18 @@ export default {
             this.measurements = res.data
             this.measurement = this.measurements[0]
             this.measurement.measuredDate = this.measurement.measuredDate.substring(0,10)
+            this.foundMeasurements = true
           })
-          .catch(() => alert("Error while fetching measurements"));
+          .catch(error => {
+            if (error.response.status === 404) {
+              this.measurement = []
+              this.mesMessage = 'No Measurements to report'
+            }
+            else {
+              this.measurement = []
+              this.mesMessage = 'Error while fetching measurements'
+            }
+          });
     },
     async fetchNutritions() {
       const apiUrl = process.env.VUE_APP_API_URL;
@@ -187,11 +226,88 @@ export default {
       await axios.get(apiUrl + `api/nutritions/${this.user.id}?start-date=${startdate}&end-date=${enddate}`)
           .then(res => {
             this.nutritions = res.data
+            this.foundNutritions = true
+            this.buildChart()
           })
-          .catch(() => alert("Error while fetching nutritions"));
+          .catch(error => {
+            if (error.response.status === 404) {
+              this.nutritions = []
+              this.nutMessage = 'No Nutrition to report'
+            }
+            else {
+              this.nutritions = []
+              this.nutMessage = 'Error while fetching nutritions'
+            }
+          });
+    },
+    buildChart() {
+      if (!this.nutritions) {
+        return;
+      }
+
+      console.log("entered build chart")
+
+      this.grouped = this.nutritions.reduce((result, item) => {
+        const key = item.macroDate.substring(0,10);
+        if (!result[key]) {
+          result[key] = [];
+        }
+        result[key].push(item);
+        return result;
+      }, {});
+
+      // Calculate the sum of the 'value' property within each group
+      let chartLabels = []
+      let chartData = []
+      Object.keys(this.grouped).forEach((key) => {
+        this.$set(chartLabels, chartLabels.length, key)
+        //chartLabels = chartLabels.push(key)
+        let itemCount = 0
+        this.grouped[key].forEach((item) => {
+          item.total = this.grouped[key].reduce((sum, currentItem) => sum + currentItem.calories, 0);
+          //chartData = chartData.push(item.total)
+          if (itemCount === 0) {
+            this.$set(chartData, chartData.length, item.total)
+          }
+          itemCount = itemCount + 1
+        });
+      });
+
+      //console.log(chartLabels)
+      //console.log(chartData)
+      // Chart data
+      const data = {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: 'Calories',
+            backgroundColor: 'rgba(75,192,192,0.2)',
+            borderColor: 'rgba(75,192,192,1)',
+            borderWidth: 1,
+            data: chartData,
+          },
+        ],
+      };
+      // Chart options
+      const options = {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      }
+      // Create the chart
+      const ctx = this.$refs.myChart.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: options,
+      });
     },
     formattedDateTime: function (activityDate) {
-      return moment(activityDate).format('YYYY-MM-DD HH:mm:ss');
+      const estDate = new Date(activityDate)
+      const retDate = new Date(estDate.getTime() + estDate.getTimezoneOffset() * 60000);
+      return moment(retDate).format('YYYY-MM-DD HH:mm:ss');
     }
   },
 };
