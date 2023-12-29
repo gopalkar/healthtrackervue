@@ -17,7 +17,7 @@
                 </b-row>
               </b-card-header>
               <b-card-body :class="{ 'd-none': hideForm}">
-                <b-form id="addUser" v-on:submit.prevent="handleSubmit" v-on:reset="clearForm">
+                <b-form id="addActivity" v-on:submit.prevent="handleSubmit" v-on:reset="clearForm">
                   <b-row>
                     <b-col>
                       <b-form-group id="input-group-1" label="Date:" label-for="input-1" >
@@ -155,10 +155,12 @@ export default {
           })
           .catch(error => {
             if (error.response.status === 404) {
+              this.foundActivities = false
               this.activities = []
               this.actMessage = 'No Activities to report'
             }
             else {
+              this.foundActivities = false
               this.activities = []
               this.actMessage = 'Error while fetching activities'
             }
@@ -257,7 +259,7 @@ export default {
       this.formData = []
       this.addupdate = 'Add'
       this.activityId = 0
-      this.foundActivities = false
+      //this.foundActivities = false
       this.actMessage = ''
     },
 

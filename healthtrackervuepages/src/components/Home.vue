@@ -184,13 +184,13 @@ export default {
             if (error.response.status === 404) {
               this.activities = []
               this.actMessage = 'No Activities to report'
-            }
-            else {
+            } else {
               this.activities = []
               this.actMessage = 'Error while fetching activities'
             }
           });
     },
+
     async fetchMeasurements() {
       const apiUrl = process.env.VUE_APP_API_URL;
       let today = new Date()
@@ -202,20 +202,21 @@ export default {
           .then(res => {
             this.measurements = res.data
             this.measurement = this.measurements[0]
-            this.measurement.measuredDate = this.measurement.measuredDate.substring(0,10)
+            this.measurement.measuredDate = this.measurement.measuredDate.substring(0, 10)
             this.foundMeasurements = true
           })
           .catch(error => {
+            console.log(error.response.status)
             if (error.response.status === 404) {
               this.measurement = []
               this.mesMessage = 'No Measurements to report'
-            }
-            else {
+            } else {
               this.measurement = []
               this.mesMessage = 'Error while fetching measurements'
             }
           });
     },
+
     async fetchNutritions() {
       const apiUrl = process.env.VUE_APP_API_URL;
       let today = new Date()
@@ -227,28 +228,29 @@ export default {
           .then(res => {
             this.nutritions = res.data
             this.foundNutritions = true
-            this.buildChart()
           })
           .catch(error => {
+            console.log(error.response.status)
             if (error.response.status === 404) {
               this.nutritions = []
               this.nutMessage = 'No Nutrition to report'
-            }
-            else {
+            } else {
               this.nutritions = []
               this.nutMessage = 'Error while fetching nutritions'
             }
           });
+      this.buildChart()
     },
+
     buildChart() {
-      if (!this.nutritions) {
+      if (this.nutritions.length === 0) {
         return;
       }
 
       console.log("entered build chart")
 
       this.grouped = this.nutritions.reduce((result, item) => {
-        const key = item.macroDate.substring(0,10);
+        const key = item.macroDate.substring(0, 10);
         if (!result[key]) {
           result[key] = [];
         }
@@ -273,8 +275,8 @@ export default {
         });
       });
 
-      //console.log(chartLabels)
-      //console.log(chartData)
+      console.log(chartLabels)
+      console.log(chartData)
       // Chart data
       const data = {
         labels: chartLabels,
@@ -304,11 +306,12 @@ export default {
         options: options,
       });
     },
+
     formattedDateTime: function (activityDate) {
       const estDate = new Date(activityDate)
       const retDate = new Date(estDate.getTime() + estDate.getTimezoneOffset() * 60000);
       return moment(retDate).format('YYYY-MM-DD HH:mm:ss');
-    }
+    },
   },
 };
 </script>
