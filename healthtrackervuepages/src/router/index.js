@@ -9,6 +9,8 @@ import UserPage from "@/components/UserPage.vue";
 import UserSignUpPage from "@/components/UserSignUpPage.vue";
 import ForgotPassword from "@/components/ForgotPassword.vue";
 import UnSubscribe from "@/components/UnSubscribe.vue";
+import Measurements from "@/components/Measurements.vue";
+import Nutritions from "@/components/Nutritions.vue";
 
 Vue.use(VueRouter);
 
@@ -20,6 +22,8 @@ const routes = [
     { path: '/home', name: 'homepage', component: Home, meta: { requiresAuth: true } },
     { path: '/userpage', name: 'userpage', component: UserPage, meta: { requiresAuth: true } },
     { path: `/activities`, name: 'activitiespage', component: Activities, meta: { requiresAuth: true } },
+    { path: `/measurements`, name: 'measurementspage', component: Measurements, meta: { requiresAuth: true } },
+    { path: `/nutritions`, name: 'nutritionspage', component: Nutritions, meta: { requiresAuth: true } },
     { path: `/logout`, name: 'logoutpage', component: Logout, meta: { requiresAuth: true } },
 ];
 
