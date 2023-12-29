@@ -89,3 +89,4 @@ npm run lint
 
 ##Conclusion
 > This concludes the functionality of Health Tracker application.
+
