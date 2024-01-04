@@ -20,7 +20,7 @@
                   <b-row>
                     <b-col>
                       <b-form-group id="input-group-1" label="Date:" label-for="input-1" >
-                        <b-form-input id="input-1" v-model="formData.measuredDate" type="number" step="0.01" placeholder="Measurement Date" required />
+                        <b-form-input id="input-1" v-model="formData.measuredDate" type="datetime-local" step="0.01" placeholder="Measurement Date" required />
                       </b-form-group>
                     </b-col>
                     <b-col>
