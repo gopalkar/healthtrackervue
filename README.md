@@ -1,7 +1,7 @@
 # Health Tracker Application
 
 ## Overview
-> Health tracker application is built using Vue2.x with Bootstrap-vue on top of Health Tracker API Application
+> Health tracker application is built using Vue2.x with Bootstrap-vue on top of Health Tracker API Application.
 > 
 ## Project setup
 ```
